@@ -1,12 +1,14 @@
 [project]
 name = "automato"
 version = "0.1.0"
-description = "Add your description here"
+description = "Implementation of the AuToMATo clustering algorithm."
 readme = "README.md"
 authors = [
     { name = "m-a-huber", email = "hubermarius@hotmail.com" }
 ]
 requires-python = ">=3.10"
+license = "AGPL-3.0"
+license-files = ["LICEN[CS]E*"]
 dependencies = [
     "gudhi>=3.11.0",
     "igraph>=0.11.9",
@@ -25,5 +27,11 @@ build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 dev = [
+    "build>=1.2.2.post1",
     "pytest>=8.4.1",
+    "twine>=6.1.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/m-a-huber/AuToMATo"
+Issues = "https://github.com/m-a-huber/AuToMATo/issues"
