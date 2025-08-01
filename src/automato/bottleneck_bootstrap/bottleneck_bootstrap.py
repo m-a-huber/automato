@@ -74,6 +74,7 @@ class BottleneckBootstrap(BaseEstimator):
             Measure and Kernel Distance. Journal of Machine Learning Research,
             18(159), 1-40. http://jmlr.org/papers/v18/15-484.html
     """
+
     def __init__(
         self,
         estimator,
@@ -81,7 +82,7 @@ class BottleneckBootstrap(BaseEstimator):
         alpha=0.05,
         n_bootstrap=1000,
         parallelize=-1,
-        random_state=None
+        random_state=None,
     ):
         self.estimator = estimator
         self.estimator_params = estimator_params
@@ -101,27 +102,18 @@ class BottleneckBootstrap(BaseEstimator):
         else:
             self._alpha = alpha
             t_value_new = self._t_value_fcn(alpha)
-            self.width_conf_band_ = (
-                (2 * t_value_new)
-                / np.sqrt(len(self.points_))
+            self.width_conf_band_ = (2 * t_value_new) / np.sqrt(
+                len(self.points_)
             )
             self.cleaned_persistence_ = self._clean_persistence(
-                self.persistence_,
-                self._lifetimes_,
-                self.width_conf_band_
+                self.persistence_, self._lifetimes_, self.width_conf_band_
             )
             self.n_top_features_ = len(
                 np.concatenate(self.cleaned_persistence_)
             )
             return
 
-    def fit(
-        self,
-        X,
-        y=None,
-        persistence=None,
-        estimator_fit_params=dict()
-    ):
+    def fit(self, X, y=None, persistence=None, estimator_fit_params=dict()):
         """Method that fits a BootstrapPersistence instance to the point cloud
         whose persistence the bootstrapping procedure is to be applied to.
         This sets the attributes `width_conf_band_`, `cleaned_persistence_` and
@@ -158,15 +150,17 @@ class BottleneckBootstrap(BaseEstimator):
         else:
             self.persistence_ = persistence
         self._lifetimes_ = [
-            np.diff(dim, axis=1).reshape(-1,)
+            np.diff(dim, axis=1).reshape(
+                -1,
+            )
             for dim in self.persistence_
         ]
         persistence_flattened = np.concatenate(deepcopy(self.persistence_))
         # Add column with lifetimes
         lifetimes_flattened = np.concatenate(self._lifetimes_)
-        persistence_flattened = np.concatenate([
-            persistence_flattened, lifetimes_flattened.reshape(-1, 1)
-        ], axis=1)
+        persistence_flattened = np.concatenate(
+            [persistence_flattened, lifetimes_flattened.reshape(-1, 1)], axis=1
+        )
         # Drop points at infinity
         persistence_flattened = persistence_flattened[
             np.isfinite(persistence_flattened[:, -1])
@@ -179,22 +173,18 @@ class BottleneckBootstrap(BaseEstimator):
                 estimator=self.estimator,
                 estimator_params=self.estimator_params,
                 estimator_fit_params=self.estimator_fit_params,
-                dgm_ref=persistence_flattened[:, :2]
+                dgm_ref=persistence_flattened[:, :2],
             ),
             n_bootstrap=self.n_bootstrap,
             parallelize=self.parallelize,
-            random_state=self.random_state
+            random_state=self.random_state,
         )
         t_value = self._t_value_fcn(self.alpha)
         self.width_conf_band_ = (2 * t_value) / np.sqrt(len(self.points_))
         self.cleaned_persistence_ = self._clean_persistence(
-            self.persistence_,
-            self._lifetimes_,
-            self.width_conf_band_
+            self.persistence_, self._lifetimes_, self.width_conf_band_
         )
-        self.n_top_features_ = len(
-            np.concatenate(self.cleaned_persistence_)
-        )
+        self.n_top_features_ = len(np.concatenate(self.cleaned_persistence_))
         return self
 
     @staticmethod
@@ -204,13 +194,19 @@ class BottleneckBootstrap(BaseEstimator):
         estimator,
         estimator_params,
         estimator_fit_params,
-        dgm_ref
+        dgm_ref,
     ):
         est = estimator(**estimator_params)
         est.fit(subsample, **estimator_fit_params)
         dgm = np.concatenate(est.persistence_)
         # Drop points at infinity
-        dgm = dgm[np.isfinite(np.diff(dgm, axis=1).reshape(-1,))]
+        dgm = dgm[
+            np.isfinite(
+                np.diff(dgm, axis=1).reshape(
+                    -1,
+                )
+            )
+        ]
         return np.sqrt(n) * bottleneck_distance(dgm, dgm_ref)
 
     @staticmethod
@@ -221,13 +217,13 @@ class BottleneckBootstrap(BaseEstimator):
         ]
 
     def plot_persistence(
-            self,
-            without_infty=False,
-            with_band=True,
-            to_scale=False,
-            marker_size=5.0,
-            display_plot=False,
-            plotly_params=None
+        self,
+        without_infty=False,
+        with_band=True,
+        to_scale=False,
+        marker_size=5.0,
+        display_plot=False,
+        plotly_params=None,
     ):
         """Method to plot the persistence diagram of the point cloud
         underlying a fitted instance of BottleneckBootstrap.
@@ -269,16 +265,12 @@ class BottleneckBootstrap(BaseEstimator):
             to_scale=to_scale,
             marker_size=marker_size,
             display_plot=display_plot,
-            plotly_params=plotly_params
+            plotly_params=plotly_params,
         )
 
 
 def get_bootstrap_t_value(
-    X,
-    statistic,
-    n_bootstrap=1000,
-    parallelize=-1,
-    random_state=None
+    X, statistic, n_bootstrap=1000, parallelize=-1, random_state=None
 ):
     """Function performing the bootstrap on given data.
 
@@ -308,26 +300,25 @@ def get_bootstrap_t_value(
     """
     bootstrap_samples = X[
         np.random.RandomState(random_state).choice(
-            a=len(X),
-            size=(n_bootstrap, len(X)),
-            replace=True
+            a=len(X), size=(n_bootstrap, len(X)), replace=True
         )
     ]
     if parallelize != 0:
-        theta_stars = np.array(Parallel(parallelize)(
-            delayed(statistic)(subsample)
-            for subsample in bootstrap_samples
-        ))
+        theta_stars = np.array(
+            Parallel(parallelize)(
+                delayed(statistic)(subsample)
+                for subsample in bootstrap_samples
+            )
+        )
     else:
-        theta_stars = np.array([
-            statistic(subsample)
-            for subsample in bootstrap_samples
-        ])
+        theta_stars = np.array(
+            [statistic(subsample) for subsample in bootstrap_samples]
+        )
     theta_stars_sorted = np.sort(theta_stars)
     return partial(
         t_value_fcn,
         n_bootstrap=n_bootstrap,
-        theta_stars_sorted=theta_stars_sorted
+        theta_stars_sorted=theta_stars_sorted,
     )
 
 

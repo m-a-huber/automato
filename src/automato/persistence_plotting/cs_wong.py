@@ -9,7 +9,7 @@ names = [
     "yellow",
     "blue",
     "vermillion",
-    "reddish_purple"
+    "reddish_purple",
 ]
 rgbs = [
     (0, 0, 0),
@@ -19,6 +19,6 @@ rgbs = [
     (240, 228, 66),
     (0, 114, 178),
     (213, 94, 0),
-    (204, 121, 167)
+    (204, 121, 167),
 ]
 dictionary = dict(zip(names, rgbs))

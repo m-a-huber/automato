@@ -13,6 +13,7 @@ class _Customato(Tomato, ClusterMixin, BaseEstimator):
     """This is a helper class to facilitate the integration of
     bootstrap_persistence.BootstrapPersistence into AuToMATo.
     """
+
     def __init__(self, **params):
         Tomato.__init__(self, **params)
 
@@ -24,10 +25,12 @@ class _Customato(Tomato, ClusterMixin, BaseEstimator):
     def _get_persistence_(self):
         self._min_weight_ = np.min(self.weights_)
         finite_pts = self.diagram_
-        infinite_pts = np.array([
+        infinite_pts = np.array(
+            [
                 [infinite_birth, -np.inf]
                 for infinite_birth in self.max_weight_per_cc_
-            ])
+            ]
+        )
         all_pts = np.concatenate([finite_pts, infinite_pts])
         return [-all_pts]
 
@@ -113,15 +116,16 @@ class Automato(_Customato, ClusterMixin, BaseEstimator):
         >>> (aut.labels_ == y).all()
         True
     """
+
     def __init__(
-            self,
-            create_outliers=False,
-            ratio_outliers=0.1,
-            alpha=0.35,
-            n_bootstrap=1000,
-            tomato_params=dict(),
-            parallelize=-1,
-            random_state=None
+        self,
+        create_outliers=False,
+        ratio_outliers=0.1,
+        alpha=0.35,
+        n_bootstrap=1000,
+        tomato_params=dict(),
+        parallelize=-1,
+        random_state=None,
     ):
         _Customato.__init__(self, **tomato_params)
         self.create_outliers = create_outliers
@@ -240,11 +244,13 @@ class Automato(_Customato, ClusterMixin, BaseEstimator):
 
     def _get_knn_graph(self, X, k):
         list_of_vertex_nbrs = KNN(k=k).fit_transform(X)
-        knn_edges = np.array([
-            [vertex, vertex_nbr]
-            for vertex, vertex_nbrs in enumerate(list_of_vertex_nbrs)
-            for vertex_nbr in vertex_nbrs
-        ])
+        knn_edges = np.array(
+            [
+                [vertex, vertex_nbr]
+                for vertex, vertex_nbrs in enumerate(list_of_vertex_nbrs)
+                for vertex_nbr in vertex_nbrs
+            ]
+        )
         adj = np.zeros((len(X), len(X)), dtype=int)
         adj[knn_edges[:, 0], knn_edges[:, 1]] = 1
         np.fill_diagonal(adj, 0)
@@ -262,34 +268,36 @@ class Automato(_Customato, ClusterMixin, BaseEstimator):
             self.max_weight_per_cc_ = np.array([np.inf])
             self._finite_pts_ = np.array([]).reshape(-1, 2)
             self._infinite_pts_ = np.array([]).reshape(-1, 2)
-            self.diagram_ = np.concatenate([
-                    self._finite_pts_,
-                    self._infinite_pts_
-                ])
+            self.diagram_ = np.concatenate(
+                [self._finite_pts_, self._infinite_pts_]
+            )
             self._essential_pts_ = np.array([]).reshape(-1, 2)
             self.n_clusters_ = 1
         else:
             _Customato.fit(self, X, **self.tomato_fit_params)
             self._finite_pts_, self._infinite_pts_ = self._get_points()
-            self.diagram_ = np.concatenate([
-                    self._finite_pts_,
-                    self._infinite_pts_
-                ])
+            self.diagram_ = np.concatenate(
+                [self._finite_pts_, self._infinite_pts_]
+            )
             self._essential_pts_ = self._cancel_noise_automato()
-            self.n_clusters_ = np.max([
-                len(self._essential_pts_),
-                len(self.max_weight_per_cc_)
-            ])
+            self.n_clusters_ = np.max(
+                [len(self._essential_pts_), len(self.max_weight_per_cc_)]
+            )
 
     def _get_points(self):
         def _sort_by_lifetimes(persistence):
-            lifetimes = -np.diff(persistence, axis=1).reshape(-1,)
+            lifetimes = -np.diff(persistence, axis=1).reshape(
+                -1,
+            )
             return persistence[np.argsort(lifetimes)]
+
         finite_pts = self.diagram_
-        infinite_pts = np.array([
-            [infinite_birth, -np.inf]
-            for infinite_birth in self.max_weight_per_cc_
-        ])
+        infinite_pts = np.array(
+            [
+                [infinite_birth, -np.inf]
+                for infinite_birth in self.max_weight_per_cc_
+            ]
+        )
         return _sort_by_lifetimes(finite_pts), _sort_by_lifetimes(infinite_pts)
 
     def _cancel_noise_automato(self):
@@ -299,23 +307,16 @@ class Automato(_Customato, ClusterMixin, BaseEstimator):
             n_bootstrap=self.n_bootstrap,
             parallelize=self.parallelize,
             estimator_params=self.tomato_params,
-            random_state=self.random_state
+            random_state=self.random_state,
         )
         self._bootstrapper.fit(
-            X=self.points_,
-            estimator_fit_params=self.tomato_fit_params
+            X=self.points_, estimator_fit_params=self.tomato_fit_params
         )
-        cleaned_pts = np.concatenate(
-            self._bootstrapper.cleaned_persistence_
-        )
+        cleaned_pts = np.concatenate(self._bootstrapper.cleaned_persistence_)
         self.width_conf_band_ = self._bootstrapper.width_conf_band_
         return cleaned_pts
 
-    def plot_diagram(
-        self,
-        to_scale=False,
-        display_plot=False
-    ):
+    def plot_diagram(self, to_scale=False, display_plot=False):
         """Method to plot the persistence diagram of the AuToMATo instance
         resp. its underlying ToMATo instance.
         In the resulting plot, points are colored according to whether or not
@@ -339,16 +340,16 @@ class Automato(_Customato, ClusterMixin, BaseEstimator):
             [[self._finite_pts_, self._infinite_pts_]],
             bandwidths=[-self.width_conf_band_],
             to_scale=to_scale,
-            display_plot=display_plot
+            display_plot=display_plot,
         )
         fig._data_objs[0].name = "y=x"
         fig._data_objs[1].name = "Finite points"
         fig._data_objs[2].name = "Infinite points"
-        fig._data_objs[3].name = u"y=\u2212\u221E"
+        fig._data_objs[3].name = "y=\u2212\u221e"
         fig._data_objs[4].name = "Bootstrap cutoff"
         fig._data_objs[5].name = "Finite points"
         fig._data_objs[6].name = "Infinite points"
         fig._data_objs[7].name = "y=x"
-        fig._data_objs[8].name = u"y=\u2212\u221E"
+        fig._data_objs[8].name = "y=\u2212\u221e"
         fig._data_objs[9].name = "Bootstrap cutoff"
         return fig

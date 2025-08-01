@@ -6,15 +6,15 @@ from . import cs_wong
 
 
 def plot_persistences(
-        persistences,
-        homology_dimensions=None,
-        without_infty=False,
-        bandwidths=None,
-        to_scale=False,
-        marker_size=5.0,
-        titles=None,
-        display_plot=False,
-        plotly_params=None
+    persistences,
+    homology_dimensions=None,
+    without_infty=False,
+    bandwidths=None,
+    to_scale=False,
+    marker_size=5.0,
+    titles=None,
+    display_plot=False,
+    plotly_params=None,
 ):
     """Function plotting a collection of persistence diagrams. Inspired by and
     building upon code from the `giotto-tda` package [1].
@@ -84,13 +84,8 @@ def plot_persistences(
     """
     # Validate `persistences` parameter
     if not isinstance(persistences, list):
-        raise ValueError(
-            "The `persistences` parameter must be a list."
-        )
-    if not all(
-        isinstance(persistences, list)
-        for persistence in persistences
-    ):
+        raise ValueError("The `persistences` parameter must be a list.")
+    if not all(isinstance(persistences, list) for persistence in persistences):
         raise ValueError(
             "Each entry of the `persistences` parameter must be a list."
         )
@@ -104,8 +99,7 @@ def plot_persistences(
             "parameter must be a NumPy-array."
         )
     if not all(
-        dim.ndim == 2 and
-        dim.shape[1:] == (2,)
+        dim.ndim == 2 and dim.shape[1:] == (2,)
         for persistence in persistences
         for dim in persistence
     ):
@@ -128,9 +122,9 @@ def plot_persistences(
                 "parameter must be a list or None."
             )
         if not all(
-            isinstance(dim, int) and
-            dim >= 0 and
-            dim <= len(persistences[i]) - 1
+            isinstance(dim, int)
+            and dim >= 0
+            and dim <= len(persistences[i]) - 1
             for i, homology_dimension in enumerate(homology_dimensions)
             if homology_dimension is not None
             for dim in homology_dimension
@@ -142,24 +136,19 @@ def plot_persistences(
             )
     # Validate `without_infty` parameter
     if not isinstance(without_infty, bool):
-        raise ValueError(
-            "The `without_infty` parameter must be a Boolean."
-        )
+        raise ValueError("The `without_infty` parameter must be a Boolean.")
     # Validate `bandwidths` parameter
     if not isinstance(bandwidths, (list, type(None))):
-        raise ValueError(
-            "The `bandwidths` parameter must be a list or None."
-        )
+        raise ValueError("The `bandwidths` parameter must be a list or None.")
         if bandwidths is not None:
             if not (
                 all(
                     isinstance(bandwidth, (int, float, type(None)))
                     for bandwidth in bandwidths
-                ) and
-                all(
-                    bandwidth is None or (
-                        bandwidth >= 0 and bandwidth < float("inf")
-                    )
+                )
+                and all(
+                    bandwidth is None
+                    or (bandwidth >= 0 and bandwidth < float("inf"))
                     for bandwidth in bandwidths
                 )
             ):
@@ -169,37 +158,28 @@ def plot_persistences(
                 )
     # Validate `to_scale` parameter
     if not isinstance(to_scale, bool):
-        raise ValueError(
-            "The `to_scale` parameter must be a Boolean."
-        )
+        raise ValueError("The `to_scale` parameter must be a Boolean.")
     # Validate `marker_size` parameter
     if not (
-        isinstance(marker_size, (int, float)) and
-        marker_size > 0 and
-        marker_size < float("inf")
+        isinstance(marker_size, (int, float))
+        and marker_size > 0
+        and marker_size < float("inf")
     ):
         raise ValueError(
             "The `marker_size` parameter must be a finite positive number."
         )
     # Validate `titles` parameter
     if not isinstance(titles, (list, type(None))):
-        raise ValueError(
-            "The `titles` parameter must be a list or None."
-        )
+        raise ValueError("The `titles` parameter must be a list or None.")
     if titles is not None:
-        if not all(
-            isinstance(el, (str, type(None)))
-            for el in titles
-        ):
+        if not all(isinstance(el, (str, type(None))) for el in titles):
             raise ValueError(
                 "Each entry of the `titles` parameter "
                 "must be a string or None."
             )
     # Validate `display_plot` parameter
     if not isinstance(display_plot, bool):
-        raise ValueError(
-            "The `display_plot` parameter must be a Boolean."
-        )
+        raise ValueError("The `display_plot` parameter must be a Boolean.")
     # Validate `plotly_params` parameter
     if not isinstance(plotly_params, (dict, type(None))):
         raise ValueError(
@@ -210,12 +190,10 @@ def plot_persistences(
     diagrams = persistences
     n_diagrams = len(diagrams)
     dgms = tuple(
-        _make_plottable(dgm, without_infty=without_infty)
-        for dgm in diagrams
+        _make_plottable(dgm, without_infty=without_infty) for dgm in diagrams
     )
     dgms_indexed = tuple(
-        np.c_[dgm, i * np.ones(dgm.shape[0])]
-        for i, dgm in enumerate(dgms)
+        np.c_[dgm, i * np.ones(dgm.shape[0])] for i, dgm in enumerate(dgms)
     )
     dgms_combined = np.vstack(dgms_indexed)
     if homology_dimensions is None:
@@ -262,7 +240,7 @@ def plot_persistences(
         if has_posinfinite_death:
             posinfinity_val = max(
                 max_xval + 0.05 * xparameter_range,
-                max_yval + 0.05 * yparameter_range
+                max_yval + 0.05 * yparameter_range,
             )
             posinfinity_val_list.append(posinfinity_val)
             extra_space_factor += 0.05
@@ -272,7 +250,7 @@ def plot_persistences(
         if has_neginfinite_death:
             neginfinity_val = min(
                 min_xval - 0.05 * xparameter_range,
-                min_yval - 0.05 * yparameter_range
+                min_yval - 0.05 * yparameter_range,
             )
             neginfinity_val_list.append(neginfinity_val)
             extra_space_factor += 0.05
@@ -291,17 +269,10 @@ def plot_persistences(
 
     min_xval_display = min(min_xval_display_list)
     max_xval_display = max(max_xval_display_list)
-    min_yval_display = min(
-        min(min_yval_display_list),
-        min_xval_display
-    )
-    max_yval_display = max(
-        max(max_yval_display_list),
-        max_xval_display
-    )
+    min_yval_display = min(min(min_yval_display_list), min_xval_display)
+    max_yval_display = max(max(max_yval_display_list), max_xval_display)
     if any(
-        posinfinity_val is not None
-        for posinfinity_val in posinfinity_val_list
+        posinfinity_val is not None for posinfinity_val in posinfinity_val_list
     ):
         posinfinity_val_display = max(
             posinfinity_val
@@ -309,8 +280,7 @@ def plot_persistences(
             if posinfinity_val is not None
         )
     if any(
-        neginfinity_val is not None
-        for neginfinity_val in neginfinity_val_list
+        neginfinity_val is not None for neginfinity_val in neginfinity_val_list
     ):
         neginfinity_val_display = min(
             neginfinity_val
@@ -319,8 +289,7 @@ def plot_persistences(
         )
     if bandwidths is not None:
         bandwidths_aux = [
-            bandwidth
-            if bandwidth is not None else 0
+            bandwidth if bandwidth is not None else 0
             for bandwidth in bandwidths
         ]
         min_yval_display = np.min(
@@ -336,19 +305,23 @@ def plot_persistences(
             posinfinity_val is not None
             for posinfinity_val in posinfinity_val_list
         ):
-            posinfinity_val_display = np.max([
-                posinfinity_val_display,
-                max_xval_display + np.max(bandwidths_aux)
-            ])
+            posinfinity_val_display = np.max(
+                [
+                    posinfinity_val_display,
+                    max_xval_display + np.max(bandwidths_aux),
+                ]
+            )
             max_yval_display += extra_yspace
         if any(
             neginfinity_val is not None
             for neginfinity_val in neginfinity_val_list
         ):
-            neginfinity_val_display = np.min([
-                neginfinity_val_display,
-                min_xval_display + np.min(bandwidths_aux)
-            ])
+            neginfinity_val_display = np.min(
+                [
+                    neginfinity_val_display,
+                    min_xval_display + np.min(bandwidths_aux),
+                ]
+            )
             min_yval_display -= extra_yspace
 
     rows = n_diagrams // 2 + n_diagrams % 2
@@ -358,14 +331,18 @@ def plot_persistences(
 
     for i, dgm in enumerate(diagrams):
         # Add diagonal y=x
-        fig.add_trace(gobj.Scatter(
-            x=[min_xval_display, max_xval_display],
-            y=[min_xval_display, max_xval_display],
-            mode="lines",
-            line={"width": 1, "color": "black"},
-            showlegend=False,
-            hoverinfo="none"
-            ), row=(i // 2) + 1, col=(i % 2) + 1)
+        fig.add_trace(
+            gobj.Scatter(
+                x=[min_xval_display, max_xval_display],
+                y=[min_xval_display, max_xval_display],
+                mode="lines",
+                line={"width": 1, "color": "black"},
+                showlegend=False,
+                hoverinfo="none",
+            ),
+            row=(i // 2) + 1,
+            col=(i % 2) + 1,
+        )
 
         diagram = dgms_combined[dgms_combined[:, -1] == i][:, :-1]
         # Add homological generators
@@ -377,15 +354,16 @@ def plot_persistences(
             subdiagram = diagram[diagram[:, 2] == dim]
             unique, inverse, counts = np.unique(
                 subdiagram, axis=0, return_inverse=True, return_counts=True
-                )
+            )
             hovertext = [
-                f"{tuple(unique[unique_row_index][:2])}" +
-                (
+                f"{tuple(unique[unique_row_index][:2])}"
+                + (
                     f", multiplicity: {counts[unique_row_index]}"
-                    if counts[unique_row_index] > 1 else ""
+                    if counts[unique_row_index] > 1
+                    else ""
                 )
                 for unique_row_index in inverse
-                ]
+            ]
             y = subdiagram[:, 1]
             # if len(posinfinity_val_list) > i:
             if posinfinity_val_list[i] is not None:
@@ -393,144 +371,178 @@ def plot_persistences(
             # if len(neginfinity_val_list) > i:
             if neginfinity_val_list[i] is not None:
                 y[np.isneginf(y)] = neginfinity_val_display
-            fig.add_trace(gobj.Scatter(
-                x=subdiagram[:, 0],
-                y=y,
-                mode="markers",
-                hoverinfo="text",
-                hovertext=hovertext,
-                name=name,
-                marker=dict(
-                    color=f"rgb{cs_wong.rgbs[int(dim)]}",
-                    size=marker_size
+            fig.add_trace(
+                gobj.Scatter(
+                    x=subdiagram[:, 0],
+                    y=y,
+                    mode="markers",
+                    hoverinfo="text",
+                    hovertext=hovertext,
+                    name=name,
+                    marker=dict(
+                        color=f"rgb{cs_wong.rgbs[int(dim)]}", size=marker_size
+                    ),
+                    showlegend=False,
                 ),
-                showlegend=False
-            ), row=(i // 2) + 1, col=(i % 2) + 1)
+                row=(i // 2) + 1,
+                col=(i % 2) + 1,
+            )
 
     for i, dgm in enumerate(diagrams):
         # Update x-axes
-        fig.update_xaxes({
-            "title": "Birth",
-            "side": "bottom",
-            "type": "linear",
-            "range": [min_xval_display, max_xval_display],
-            "constrain": "domain",
-            "autorange": False,
-            "ticks": "outside",
-            "showline": True,
-            "zeroline": True,
-            "linewidth": 1,
-            "linecolor": "black",
-            "mirror": False,
-            "showexponent": "all",
-            "exponentformat": "e"
+        fig.update_xaxes(
+            {
+                "title": "Birth",
+                "side": "bottom",
+                "type": "linear",
+                "range": [min_xval_display, max_xval_display],
+                "constrain": "domain",
+                "autorange": False,
+                "ticks": "outside",
+                "showline": True,
+                "zeroline": True,
+                "linewidth": 1,
+                "linecolor": "black",
+                "mirror": False,
+                "showexponent": "all",
+                "exponentformat": "e",
             },
-            row=(i // 2) + 1, col=(i % 2) + 1)
+            row=(i // 2) + 1,
+            col=(i % 2) + 1,
+        )
         # Update y-axes
-        fig.update_yaxes({
-            "title": "Death",
-            "side": "left",
-            "type": "linear",
-            "range": [min_yval_display, max_yval_display],
-            "constrain": "domain",
-            "autorange": False,
-            "ticks": "outside",
-            "showline": True,
-            "zeroline": True,
-            "linewidth": 1,
-            "linecolor": "black",
-            "mirror": False,
-            "showexponent": "all",
-            "exponentformat": "e"
+        fig.update_yaxes(
+            {
+                "title": "Death",
+                "side": "left",
+                "type": "linear",
+                "range": [min_yval_display, max_yval_display],
+                "constrain": "domain",
+                "autorange": False,
+                "ticks": "outside",
+                "showline": True,
+                "zeroline": True,
+                "linewidth": 1,
+                "linecolor": "black",
+                "mirror": False,
+                "showexponent": "all",
+                "exponentformat": "e",
             },
-            row=(i // 2) + 1, col=(i % 2) + 1)
+            row=(i // 2) + 1,
+            col=(i % 2) + 1,
+        )
         if to_scale:
-            fig.update_xaxes({
-                "scaleanchor": "x",
-                "scaleratio": 1,
+            fig.update_xaxes(
+                {
+                    "scaleanchor": "x",
+                    "scaleratio": 1,
                 },
-                row=(i // 2) + 1, col=(i % 2) + 1)
-            fig.update_yaxes({
-                "scaleanchor": "x",
-                "scaleratio": 1,
+                row=(i // 2) + 1,
+                col=(i % 2) + 1,
+            )
+            fig.update_yaxes(
+                {
+                    "scaleanchor": "x",
+                    "scaleratio": 1,
                 },
-                row=(i // 2) + 1, col=(i % 2) + 1)
+                row=(i // 2) + 1,
+                col=(i % 2) + 1,
+            )
 
     fig.update_layout(
-            width=500 * cols,
-            height=500 * rows,
-            plot_bgcolor="white"
+        width=500 * cols, height=500 * rows, plot_bgcolor="white"
     )
 
     # Add a horizontal dashed line for points with infinite death
     for i, dgm in enumerate(diagrams):
         if posinfinity_val_list[i] is not None:
-            fig.add_trace(gobj.Scatter(
-                x=[min_xval_display, max_xval_display],
-                y=[posinfinity_val_display, posinfinity_val_display],
-                mode="lines",
-                line={"dash": "dash", "width": 0.5, "color": "black"},
-                showlegend=False,
-                hoverinfo="none"
-            ), row=(i // 2) + 1, col=(i % 2) + 1)
+            fig.add_trace(
+                gobj.Scatter(
+                    x=[min_xval_display, max_xval_display],
+                    y=[posinfinity_val_display, posinfinity_val_display],
+                    mode="lines",
+                    line={"dash": "dash", "width": 0.5, "color": "black"},
+                    showlegend=False,
+                    hoverinfo="none",
+                ),
+                row=(i // 2) + 1,
+                col=(i % 2) + 1,
+            )
 
     # Add a horizontal dashed line for points with negative death
     for i, dgm in enumerate(diagrams):
         if neginfinity_val_list[i] is not None:
-            fig.add_trace(gobj.Scatter(
-                x=[min_xval_display, max_xval_display],
-                y=[neginfinity_val_display, neginfinity_val_display],
-                mode="lines",
-                line={"dash": "dash", "width": 0.5, "color": "black"},
-                showlegend=False,
-                hoverinfo="none"
-            ), row=(i // 2) + 1, col=(i % 2) + 1)
+            fig.add_trace(
+                gobj.Scatter(
+                    x=[min_xval_display, max_xval_display],
+                    y=[neginfinity_val_display, neginfinity_val_display],
+                    mode="lines",
+                    line={"dash": "dash", "width": 0.5, "color": "black"},
+                    showlegend=False,
+                    hoverinfo="none",
+                ),
+                row=(i // 2) + 1,
+                col=(i % 2) + 1,
+            )
 
     # Add dashed line indicating bandwidths
     for i, dgm in enumerate(diagrams):
         if bandwidths is not None and bandwidths[i] is not None:
             bandwidth = bandwidths[i]
-            fig.add_trace(gobj.Scatter(
-                x=[min_xval_display, max_xval_display],
-                y=[min_xval_display + bandwidth, max_xval_display + bandwidth],
-                mode="lines",
-                line={"dash": "dot", "width": 1, "color": "black"},
-                showlegend=False,
-                hoverinfo="none"
-            ), row=(i // 2) + 1, col=(i % 2) + 1)
+            fig.add_trace(
+                gobj.Scatter(
+                    x=[min_xval_display, max_xval_display],
+                    y=[
+                        min_xval_display + bandwidth,
+                        max_xval_display + bandwidth,
+                    ],
+                    mode="lines",
+                    line={"dash": "dot", "width": 1, "color": "black"},
+                    showlegend=False,
+                    hoverinfo="none",
+                ),
+                row=(i // 2) + 1,
+                col=(i % 2) + 1,
+            )
 
     # Add the legend shared across both plots
     dims = np.unique(np.concatenate([arr for arr in homology_dimensions_aux]))
     for dim in dims:
-        fig.add_trace(gobj.Scatter(
-            x=[None],
-            y=[None],
-            mode="markers",
-            showlegend=True,
-            name=f"H{int(dim)}",
-            marker=dict(color=f"rgb{cs_wong.rgbs[int(dim)]}")
-        ))
+        fig.add_trace(
+            gobj.Scatter(
+                x=[None],
+                y=[None],
+                mode="markers",
+                showlegend=True,
+                name=f"H{int(dim)}",
+                marker=dict(color=f"rgb{cs_wong.rgbs[int(dim)]}"),
+            )
+        )
 
     # Add legend for diagonal
-    fig.add_trace(gobj.Scatter(
-        x=[None],
-        y=[None],
-        mode="lines",
-        line={"width": 1, "color": "black"},
-        showlegend=True,
-        name=u"y=x"
-    ))
-
-    # Add legend for infinity bars
-    if not without_infty:
-        fig.add_trace(gobj.Scatter(
+    fig.add_trace(
+        gobj.Scatter(
             x=[None],
             y=[None],
             mode="lines",
-            line={"dash": "dash", "width": 1, "color": "black"},
+            line={"width": 1, "color": "black"},
             showlegend=True,
-            name=u"y=\u00B1\u221E"
-        ))
+            name="y=x",
+        )
+    )
+
+    # Add legend for infinity bars
+    if not without_infty:
+        fig.add_trace(
+            gobj.Scatter(
+                x=[None],
+                y=[None],
+                mode="lines",
+                line={"dash": "dash", "width": 1, "color": "black"},
+                showlegend=True,
+                name="y=\u00b1\u221e",
+            )
+        )
 
     # Add legend for bandwidths
     if bandwidths is not None:
@@ -539,14 +551,16 @@ def plot_persistences(
                 "Confidence band"
                 + (lambda: "" if len(diagrams) == 1 else "s")()
             )
-            fig.add_trace(gobj.Scatter(
-                x=[None],
-                y=[None],
-                mode="lines",
-                line={"dash": "dot", "width": 1, "color": "black"},
-                showlegend=True,
-                name=name
-            ))
+            fig.add_trace(
+                gobj.Scatter(
+                    x=[None],
+                    y=[None],
+                    mode="lines",
+                    line={"dash": "dot", "width": 1, "color": "black"},
+                    showlegend=True,
+                    name=name,
+                )
+            )
 
     # Update traces and layout according to user input
     if plotly_params:
@@ -560,21 +574,25 @@ def plot_persistences(
 def _make_plottable(persistence, for_gudhi=False, without_infty=False):
     if for_gudhi:
         if without_infty:
-            return np.array([
-                (ix, row)
-                for ix, arr in enumerate(persistence)
-                for row in arr
-                if row[-1] != np.inf
-            ], dtype=object)
-        return np.array([
-            (ix, row)
+            return np.array(
+                [
+                    (ix, row)
+                    for ix, arr in enumerate(persistence)
+                    for row in arr
+                    if row[-1] != np.inf
+                ],
+                dtype=object,
+            )
+        return np.array(
+            [(ix, row) for ix, arr in enumerate(persistence) for row in arr],
+            dtype=object,
+        )
+    res = np.vstack(
+        [
+            np.c_[arr, ix * np.ones(arr.shape[0])]
             for ix, arr in enumerate(persistence)
-            for row in arr
-        ], dtype=object)
-    res = np.vstack([
-        np.c_[arr, ix * np.ones(arr.shape[0])]
-        for ix, arr in enumerate(persistence)
-    ])
+        ]
+    )
     if without_infty:
         res = res[np.isfinite(res).all(axis=1)]
     return res
