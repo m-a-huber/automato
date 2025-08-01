@@ -23,6 +23,16 @@ Required Python dependencies are specified in `pyproject.toml`. Provided that `u
 
 ---
 
+__Example of installing AuToMATo via `pip` for `uv` users__
+
+```
+$ uv init
+$ uv add automato
+$ uv run python
+>>> from automato import Automato
+>>> ...
+```
+
 __Example of installing AuToMATo from source for `uv` users__
 
 ```
