@@ -34,15 +34,3 @@ $ uv run python
 >>> from automato import Automato
 >>> ...
 ```
-
-__Installing AuToMATo from source for `uv` users__
-
-```
-$ git clone github.com/m-a-huber/automato
-$ cd automato
-$ uv sync --no-dev
-$ source .venv/bin/activate
-$ python
->>> from automato import Automato
->>> ...
-```
