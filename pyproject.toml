@@ -1,6 +1,6 @@
 [project]
 name = "automato"
-version = "0.1.0"
+version = "0.1.1"
 description = "Implementation of the AuToMATo clustering algorithm."
 readme = "README.md"
 authors = [
@@ -33,5 +33,5 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/m-a-huber/AuToMATo"
-Issues = "https://github.com/m-a-huber/AuToMATo/issues"
+Homepage = "https://github.com/m-a-huber/automato"
+Issues = "https://github.com/m-a-huber/automato/issues"
