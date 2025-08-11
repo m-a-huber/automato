@@ -17,13 +17,15 @@ True
 
 ---
 
-__Requirements__
+__Installation and requirements__
+
+AuToMATo can be installed via `pip` by running `pip install -U automato`.
 
 Required Python dependencies are specified in `pyproject.toml`. Provided that `uv` is installed, these dependencies can be installed by running `uv pip install -r pyproject.toml`. The environment specified in `uv.lock` can be recreated by running `uv sync`.
 
 ---
 
-__Example of installing AuToMATo via `pip` for `uv` users__
+__Installing AuToMATo from PyPI for `uv` users__
 
 ```
 $ uv init
@@ -33,7 +35,7 @@ $ uv run python
 >>> ...
 ```
 
-__Example of installing AuToMATo from source for `uv` users__
+__Installing AuToMATo from source for `uv` users__
 
 ```
 $ git clone github.com/m-a-huber/AuToMATo
