@@ -18,9 +18,6 @@ dependencies = [
     "scikit-learn>=1.7.1",
 ]
 
-[project.scripts]
-automato = "automato:main"
-
 [build-system]
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
