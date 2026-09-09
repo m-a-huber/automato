@@ -1,3 +1,5 @@
+# AuToMATo
+
 Implementation of the AuToMATo clustering algorithm introduced in [<em>AuToMATo: An Out-Of-The-Box Persistence-Based Clustering Algorithm</em>](https://arxiv.org/abs/2408.06958).
 
 ---
